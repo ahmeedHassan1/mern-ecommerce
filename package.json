@@ -1,0 +1,32 @@
+{
+	"name": "mern-ecommerce",
+	"version": "1.0.0",
+	"description": "",
+	"type": "module",
+	"main": "index.js",
+	"scripts": {
+		"start": "node server/index.js",
+		"server": "nodemon server/index.js",
+		"client": "npm run dev --prefix client",
+		"dev": "concurrently \"npm run server\" \"npm run client\"",
+		"data:import": "node server/seeder",
+		"data:destroy": "node server/seeder -d"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"cookie-parser": "^1.4.7",
+		"express": "^4.21.1",
+		"jsonwebtoken": "^9.0.2",
+		"mern-ecommerce": "file:",
+		"mongoose": "^8.7.1"
+	},
+	"devDependencies": {
+		"colors": "^1.4.0",
+		"concurrently": "^9.0.1",
+		"dotenv": "^16.4.5",
+		"nodemon": "^3.1.7"
+	}
+}
