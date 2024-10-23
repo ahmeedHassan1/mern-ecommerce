@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Row, Col, ListGroup, Image, Card, Button } from "react-bootstrap";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
-import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
@@ -23,8 +22,6 @@ const OrderScreen = () => {
 	} = useGetOrderDetailsQuery(orderId);
 
 	const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
-
-	const { userInfo } = useSelector((state) => state.auth);
 
 	const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
@@ -55,7 +52,8 @@ const OrderScreen = () => {
 	}, [errorPayPal, loadingPayPal, order, paypal, paypalDispatch]);
 
 	function onApprove(data, actions) {
-		return actions.order.capture().then(async function (details) {
+		return actions.order.get().then(async function (details) {
+			console.log("details", details);
 			try {
 				await payOrder({ orderId, details });
 				refetch();

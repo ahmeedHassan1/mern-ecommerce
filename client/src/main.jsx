@@ -21,6 +21,7 @@ import RegisterScreen from "./screens/RegisterScreen.jsx";
 import ShippingScreen from "./screens/ShippingScreen.jsx";
 import PaymentScreen from "./screens/PaymentScreen.jsx";
 import OrderScreen from "./screens/OrderScreen.jsx";
+import ProfileScreen from "./screens/ProfileScreen.jsx";
 
 import "./assets/styles/index.css";
 import "./assets/styles/bootstrap.custom.css";
@@ -40,6 +41,7 @@ const router = createBrowserRouter(
 				<Route path="/payment" element={<PaymentScreen />} />
 				<Route path="/placeorder" element={<PlaceOrderScreen />} />
 				<Route path="/order/:id" element={<OrderScreen />} />
+				<Route path="/profile" element={<ProfileScreen />} />
 			</Route>
 		</Route>
 	)
@@ -48,9 +50,7 @@ const router = createBrowserRouter(
 createRoot(document.getElementById("root")).render(
 	<StrictMode>
 		<Provider store={store}>
-			<PayPalScriptProvider
-				deferLoading={true}
-				options={{ clientId: "ASB8r7YLCXi3TN9mfA6rFWi_nC9KTS204O5HZj0KA4YHkqV8XIuX6Nm5tuX3bJPseEenanmCpf3XdBed" }}>
+			<PayPalScriptProvider deferLoading={true}>
 				<RouterProvider router={router} />
 			</PayPalScriptProvider>
 		</Provider>
