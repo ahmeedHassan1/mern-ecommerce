@@ -21,7 +21,8 @@
 		"express": "^4.21.1",
 		"jsonwebtoken": "^9.0.2",
 		"mern-ecommerce": "file:",
-		"mongoose": "^8.7.1"
+		"mongoose": "^8.7.1",
+		"react-toastify": "^10.0.6"
 	},
 	"devDependencies": {
 		"colors": "^1.4.0",
