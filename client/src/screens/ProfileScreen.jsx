@@ -110,7 +110,10 @@ const ProfileScreen = () => {
 					<Loader />
 				) : error ? (
 					<Message variant="danger">
-						{error?.data?.message || error.error}
+						{error?.data?.message ||
+							error.message ||
+							error.error ||
+							"An error occurred"}
 					</Message>
 				) : (
 					<Table striped hover responsive className="table-sm">
@@ -144,13 +147,13 @@ const ProfileScreen = () => {
 											<FaTimes style={{ color: "red" }} />
 										)}
 									</td>
-                                    <td>
-                                        <LinkContainer to={`/order/${order._id}`}>
-                                            <Button className="btn-sm" variant="light">
-                                                Details
-                                            </Button>
-                                        </LinkContainer>
-                                    </td>
+									<td>
+										<LinkContainer to={`/order/${order._id}`}>
+											<Button className="btn-sm" variant="light">
+												Details
+											</Button>
+										</LinkContainer>
+									</td>
 								</tr>
 							))}
 						</tbody>

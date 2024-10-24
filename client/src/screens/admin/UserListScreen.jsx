@@ -9,29 +9,32 @@ import { useGetUsersQuery, useDeleteUserMutation } from "../../slices/users";
 const UserListScreen = () => {
 	const { data: users, refetch, isLoading, error } = useGetUsersQuery();
 
-    const [deleteUser, { isLoading: loadingDelete }] = useDeleteUserMutation();
+	const [deleteUser, { isLoading: loadingDelete }] = useDeleteUserMutation();
 
 	const deleteHandler = async (id) => {
-        if (window.confirm("Are you sure you want to delete this user?")) {
-            try {
-                await deleteUser(id);
-                toast.success("User deleted successfully");
-                refetch();
-            } catch (error) {
-                toast.error(error?.data?.message || error.error);
-            }
-        }
-    };
+		if (window.confirm("Are you sure you want to delete this user?")) {
+			try {
+				await deleteUser(id);
+				toast.success("User deleted successfully");
+				refetch();
+			} catch (error) {
+				toast.error(error?.data?.message || error.error);
+			}
+		}
+	};
 
 	return (
 		<>
 			<h1>Users</h1>
-            {loadingDelete && <Loader />}
+			{loadingDelete && <Loader />}
 			{isLoading ? (
 				<Loader />
 			) : error ? (
 				<Message variant="danger">
-					{error?.data?.message || error.error}
+					{error?.data?.message ||
+						error.message ||
+						error.error ||
+						"An error occurred"}
 				</Message>
 			) : (
 				<Table striped hover responsive className="table-sm">

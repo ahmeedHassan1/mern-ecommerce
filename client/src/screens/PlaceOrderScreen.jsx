@@ -36,11 +36,11 @@ const PlaceOrderScreen = () => {
 				shippingPrice: cart.shippingPrice,
 				totalPrice: cart.totalPrice
 			}).unwrap();
-            dispatch(clearCartItems());
-            navigate(`/order/${res._id}`);
+			dispatch(clearCartItems());
+			navigate(`/order/${res._id}`);
 		} catch (error) {
-            toast.error(error);
-        }
+			toast.error(error);
+		}
 	};
 
 	return (
@@ -127,7 +127,14 @@ const PlaceOrderScreen = () => {
 							</ListGroup.Item>
 
 							<ListGroup.Item>
-								{error && <Message variant="danger">{error.data.message}</Message>}
+								{error && (
+									<Message variant="danger">
+										{error?.data?.message ||
+											error.message ||
+											error.error ||
+											"An error occurred"}
+									</Message>
+								)}
 							</ListGroup.Item>
 
 							<ListGroup.Item>

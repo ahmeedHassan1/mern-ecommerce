@@ -38,14 +38,14 @@ const UserEditScreen = () => {
 
 	const submitHandler = async (e) => {
 		e.preventDefault();
-        try {
-            await updateUser({ userId, name, email, isAdmin });
-            toast.success("User updated successfully");
-            refetch();
-            navigate("/admin/userlist");
-        } catch (error) {
-            toast.error(error?.data?.message || error.error);
-        }
+		try {
+			await updateUser({ userId, name, email, isAdmin });
+			toast.success("User updated successfully");
+			refetch();
+			navigate("/admin/userlist");
+		} catch (error) {
+			toast.error(error?.data?.message || error.error);
+		}
 	};
 
 	return (
@@ -61,7 +61,10 @@ const UserEditScreen = () => {
 					<Loader />
 				) : error ? (
 					<Message variant="danger">
-						{error?.data?.message || error.error}
+						{error?.data?.message ||
+							error.message ||
+							error.error ||
+							"An error occurred"}
 					</Message>
 				) : (
 					<Form onSubmit={submitHandler}>

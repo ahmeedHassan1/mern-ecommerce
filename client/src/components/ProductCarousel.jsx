@@ -10,7 +10,12 @@ const ProductCarousel = () => {
 	return isLoading ? (
 		<Loader />
 	) : error ? (
-		<Message variant="danger">{error?.data?.message || error.error}</Message>
+		<Message variant="danger">
+			{error?.data?.message ||
+				error.message ||
+				error.error ||
+				"An error occurred"}
+		</Message>
 	) : (
 		<Carousel pause="hover" className="bg-primary mb-4">
 			{products.map((product) => (
