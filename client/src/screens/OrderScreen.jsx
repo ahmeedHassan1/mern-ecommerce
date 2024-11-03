@@ -84,12 +84,16 @@ const OrderScreen = () => {
 		return actions.order.get().then(async function (details) {
 			console.log("details", details);
 			try {
+				promoCodeRef.current && (await usePromo(promoCodeRef.current).unwrap());
 				await payOrder({ orderId, details });
 				refetch();
 				toast.success("Order is paid");
-				usePromo(promoCodeRef.current);
 			} catch (err) {
-				toast.error(err?.data?.message || err.error);
+				toast.error(
+					`${
+						err?.data?.message || err.error
+					} (If amount was deducted, please contact support)`
+				);
 			}
 		});
 	}
@@ -124,8 +128,21 @@ const OrderScreen = () => {
 		}
 	}
 
-	function createOrder(data, actions) {
+	async function createOrder(data, actions) {
 		const total = totalAfterDiscountRef.current || order.totalPrice;
+		if (promoCodeRef.current) {
+			try {
+				await checkPromo(promoCodeRef.current).unwrap();
+			} catch (error) {
+				return Promise.reject(
+					new Error(
+						`Order cannot be created due to: ${
+							error?.data?.message || error.error
+						}`
+					)
+				);
+			}
+		}
 		return actions.order
 			.create({
 				purchase_units: [

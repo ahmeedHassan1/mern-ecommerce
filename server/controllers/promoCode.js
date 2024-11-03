@@ -50,25 +50,18 @@ const checkPromoCode = asyncHandler(async (req, res) => {
 
 	if (!promoCode) {
 		res.status(404);
-		throw new Error("Promo code not found");
+		throw new Error("Invalid promo code");
 	}
 
-	if (promoCode.maxUses <= promoCode.uses) {
-		res.status(400);
-		throw new Error("Promo code has been used up");
+	try {
+		await promoCode.checkCode(code, req.user._id);
+		res
+			.status(200)
+			.json({ message: "Promo code is valid", discount: promoCode.discount });
+	} catch (error) {
+		res.status(error.status || 500);
+		throw new Error(error.message);
 	}
-
-	if (promoCode.expiresAt < Date.now()) {
-		res.status(400);
-		throw new Error("Promo code has expired");
-	}
-
-	if (promoCode.users.length > 0 && !promoCode.users.includes(req.user._id)) {
-		res.status(400);
-		throw new Error("You are not eligible to use this promo code");
-	}
-
-	res.status(200).json({ message: "Promo code used", discount: promoCode.discount });
 });
 
 // @desc    Use a promo code
@@ -83,10 +76,16 @@ const usePromoCode = asyncHandler(async (req, res) => {
 		throw new Error("Promo code not found");
 	}
 
-	promoCode.uses += 1;
-	await promoCode.save();
+	try {
+		await promoCode.checkCode(code, req.user._id);
+		promoCode.uses += 1;
+		await promoCode.save();
+		res.status(200).json({ message: "Promo code used" });
+	} catch (error) {
+		res.status(error.status || 500);
+		throw new Error(error.message);
+	}
 
-	res.status(200).json({ message: "Promo code used" });
 });
 
 // @desc    Update a promo code
