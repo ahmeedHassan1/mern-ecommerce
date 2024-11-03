@@ -1,6 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Row, Col, ListGroup, Image, Card, Button } from "react-bootstrap";
+import {
+	Row,
+	Col,
+	ListGroup,
+	Image,
+	Card,
+	Button,
+	Form
+} from "react-bootstrap";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { toast } from "react-toastify";
 import Message from "../components/Message";
@@ -12,9 +20,19 @@ import {
 	useDeliverOrderMutation
 } from "../slices/orders";
 import { useSelector } from "react-redux";
+import {
+	useCheckPromoCodeMutation,
+	useUsePromoCodeMutation
+} from "../slices/promos";
 
 const OrderScreen = () => {
 	const { id: orderId } = useParams();
+
+	const [promoCode, setPromoCode] = useState("");
+	const [discount, setDiscount] = useState(0);
+	const [totalAfterDiscount, setTotalAfterDiscount] = useState(0);
+	const totalAfterDiscountRef = useRef(totalAfterDiscount);
+	const promoCodeRef = useRef(promoCode);
 
 	const {
 		data: order,
@@ -27,6 +45,10 @@ const OrderScreen = () => {
 
 	const [deliverOrder, { isLoading: loadingDeliver }] =
 		useDeliverOrderMutation();
+
+	const [checkPromo, { isLoading: loadingCheck }] = useCheckPromoCodeMutation();
+
+	const [usePromo] = useUsePromoCodeMutation();
 
 	const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
@@ -65,6 +87,7 @@ const OrderScreen = () => {
 				await payOrder({ orderId, details });
 				refetch();
 				toast.success("Order is paid");
+				usePromo(promoCodeRef.current);
 			} catch (err) {
 				toast.error(err?.data?.message || err.error);
 			}
@@ -82,12 +105,32 @@ const OrderScreen = () => {
 		toast.error(err.message);
 	}
 
+	useEffect(() => {
+		totalAfterDiscountRef.current = totalAfterDiscount;
+		promoCodeRef.current = promoCode;
+	}, [totalAfterDiscount, promoCode]);
+
+	async function promoCodeSubmitHandler(e) {
+		e.preventDefault();
+		try {
+			const res = await checkPromo(promoCode).unwrap();
+			toast.success(res.message);
+			setDiscount(res.discount);
+			const newTotal =
+				order.totalPrice - (order.totalPrice * res.discount) / 100;
+			setTotalAfterDiscount(newTotal);
+		} catch (error) {
+			toast.error(error?.data?.message || error.error);
+		}
+	}
+
 	function createOrder(data, actions) {
+		const total = totalAfterDiscountRef.current || order.totalPrice;
 		return actions.order
 			.create({
 				purchase_units: [
 					{
-						amount: { value: order.totalPrice }
+						amount: { value: total.toFixed(2) }
 					}
 				]
 			})
@@ -221,6 +264,48 @@ const OrderScreen = () => {
 									<Col>${order.totalPrice}</Col>
 								</Row>
 							</ListGroup.Item>
+
+							{discount > 0 && (
+								<>
+									<ListGroup.Item>
+										<Row>
+											<Col>Discount</Col>
+											<Col>{discount}%</Col>
+										</Row>
+									</ListGroup.Item>
+
+									<ListGroup.Item>
+										<Row>
+											<Col>Total After Discount</Col>
+											<Col>${totalAfterDiscount}</Col>
+										</Row>
+									</ListGroup.Item>
+								</>
+							)}
+
+							{!order.isPaid && (
+								<ListGroup.Item>
+									<Form onSubmit={promoCodeSubmitHandler}>
+										<Form.Group controlId="promoCode">
+											<Form.Label>Promo Code</Form.Label>
+											<Form.Control
+												type="text"
+												required
+												placeholder="Enter promo code"
+												value={promoCode}
+												onChange={(e) =>
+													setPromoCode(e.target.value)
+												}></Form.Control>
+										</Form.Group>
+										<Button type="submit" className="btn btn-block my-2">
+											Apply Promo
+										</Button>
+									</Form>
+
+									{loadingCheck && <Loader />}
+								</ListGroup.Item>
+							)}
+
 							{!order.isPaid && (
 								<ListGroup.Item>
 									{loadingPay && <Loader />}

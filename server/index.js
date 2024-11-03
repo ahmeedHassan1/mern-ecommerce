@@ -15,6 +15,7 @@ import productRoutes from "./routes/product.js";
 import userRoutes from "./routes/user.js";
 import orderRoutes from "./routes/order.js";
 import uploadRoutes from "./routes/upload.js";
+import promoCodeRoutes from "./routes/promoCode.js";
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/promos", promoCodeRoutes);
 
 app.get("/api/config/paypal", (req, res) =>
 	res.send({ clientId: process.env.PAYPAL_CLIENT_ID })

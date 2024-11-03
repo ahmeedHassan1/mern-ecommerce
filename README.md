@@ -18,6 +18,7 @@
 ## Features
 
 - Full-featured shopping cart
+- Promo Codes
 - Product reviews and ratings
 - Top products carousel
 - Product pagination
@@ -25,6 +26,7 @@
 - User profiles with order history
 - Admin product management
 - Admin user management
+- Admin promo codes management
 - Admin order details page
 - Option to mark orders as delivered
 - Comprehensive checkout process (shipping, payment method, etc.)
