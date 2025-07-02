@@ -22,7 +22,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 frontend/build
-uploads/*png
-uploads/*jpg
 
-*.log
+uploads/*
+!uploads/.gitkeep
+
+logs/*
+!logs/.gitkeep

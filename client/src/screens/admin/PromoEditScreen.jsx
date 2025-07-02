@@ -4,11 +4,13 @@ import { Form, Button } from "react-bootstrap";
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
 import FormContainer from "../../components/FormContainer";
+import UserSearchDropdown from "../../components/UserSearchDropdown";
 import { toast } from "react-toastify";
 import {
 	useGetPromoDetailsQuery,
 	useUpdatePromoMutation
 } from "../../slices/promos";
+import { useGetUsersByIdsMutation } from "../../slices/users";
 
 const PromoEditScreen = () => {
 	const { id: promoId } = useParams();
@@ -17,7 +19,7 @@ const PromoEditScreen = () => {
 	const [discount, setDiscount] = useState(0);
 	const [maxUses, setMaxUses] = useState(0);
 	const [expiresAt, setExpiresAt] = useState("");
-	const [users, setUsers] = useState([]);
+	const [selectedUsers, setSelectedUsers] = useState([]);
 
 	const {
 		data: promo,
@@ -27,18 +29,41 @@ const PromoEditScreen = () => {
 	} = useGetPromoDetailsQuery(promoId);
 
 	const [updatePromo, { isLoading: loadingUpdate }] = useUpdatePromoMutation();
+	const [getUsersByIds] = useGetUsersByIdsMutation();
 
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		if (promo) {
-			setCode(promo.code);
-			setDiscount(promo.discount);
-			setMaxUses(promo.maxUses);
-			setExpiresAt(new Date(promo.expiresAt).toISOString().split("T")[0]);
-			setUsers(promo.users);
-		}
-	}, [promo]);
+		const loadPromoData = async () => {
+			if (promo) {
+				setCode(promo.code);
+				setDiscount(promo.discount);
+				setMaxUses(promo.maxUses);
+				setExpiresAt(new Date(promo.expiresAt).toISOString().split("T")[0]);
+
+				// Load user details if there are user IDs
+				if (promo.users && promo.users.length > 0) {
+					try {
+						const userDetails = await getUsersByIds(promo.users).unwrap();
+						setSelectedUsers(userDetails);
+					} catch (error) {
+						console.error("Failed to load user details:", error);
+						// Fallback: create placeholder user objects
+						const userObjects = promo.users.map((userId) => ({
+							_id: userId,
+							name: `User ${userId}`,
+							email: "Unknown"
+						}));
+						setSelectedUsers(userObjects);
+					}
+				} else {
+					setSelectedUsers([]);
+				}
+			}
+		};
+
+		loadPromoData();
+	}, [promo, getUsersByIds]);
 
 	const submitHandler = async (e) => {
 		e.preventDefault();
@@ -49,7 +74,7 @@ const PromoEditScreen = () => {
 				discount,
 				maxUses,
 				expiresAt,
-				users
+				users: selectedUsers.map((user) => user._id) // Convert back to array of IDs
 			};
 			await updatePromo(updatedPromo).unwrap();
 			toast.success("Promo updated");
@@ -66,7 +91,7 @@ const PromoEditScreen = () => {
 				Go Back
 			</Link>
 			<FormContainer>
-				<h1>Edit Product</h1>
+				<h1>Edit Promo Code</h1>
 				{loadingUpdate && <Loader />}
 
 				{isLoading ? (
@@ -117,14 +142,15 @@ const PromoEditScreen = () => {
 						</Form.Group>
 
 						<Form.Group controlId="users" className="my-2">
-							<Form.Label>Users</Form.Label>
-							<Form.Control
-								type="text"
-								placeholder="Enter users IDs separated by commas"
-								value={users}
-								onChange={(e) =>
-									setUsers(e.target.value ? e.target.value.split(",") : [])
-								}></Form.Control>
+							<Form.Label>Eligible Users</Form.Label>
+							<UserSearchDropdown
+								selectedUsers={selectedUsers}
+								onSelectionChange={setSelectedUsers}
+								placeholder="Search users by name or email..."
+							/>
+							<Form.Text className="text-muted">
+								Leave empty to make promo code available to all users
+							</Form.Text>
 						</Form.Group>
 
 						<Button type="submit" variant="primary" className="my-2">

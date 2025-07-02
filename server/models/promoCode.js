@@ -20,13 +20,7 @@ const promoCodeSchema = new mongoose.Schema(
 		},
 		expiresAt: {
 			type: Date,
-			required: true,
-			validate: {
-				validator: function (value) {
-					return value > Date.now();
-				},
-				message: "Expiry date must be in the future."
-			}
+			required: true
 		},
 		users: [
 			{
@@ -43,7 +37,7 @@ const promoCodeSchema = new mongoose.Schema(
 promoCodeSchema.methods.checkCode = async function (userId) {
 	const error = new Error();
 
-	if (this.maxUses <= this.uses) {
+	if (this.uses >= this.maxUses) {
 		error.message = "Promo code has been used up";
 		error.status = 400;
 		throw error;

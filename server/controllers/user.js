@@ -192,9 +192,19 @@ const updateUser = asyncHandler(async (req, res) => {
 		throw new Error("User not found");
 	}
 
-	user.name = req.body.name || user.name;
-	user.email = req.body.email || user.email;
-	user.isAdmin = Boolean(req.body.isAdmin);
+	// Only update fields that are provided in the request
+	if (req.body.name !== undefined) {
+		user.name = req.body.name;
+	}
+	if (req.body.email !== undefined) {
+		user.email = req.body.email;
+	}
+	if (req.body.isAdmin !== undefined) {
+		user.isAdmin = Boolean(req.body.isAdmin);
+	}
+	if (req.body.password) {
+		user.password = req.body.password;
+	}
 
 	const updatedUser = await user.save();
 	res.status(200).json({
@@ -203,6 +213,48 @@ const updateUser = asyncHandler(async (req, res) => {
 		email: updatedUser.email,
 		isAdmin: updatedUser.isAdmin
 	});
+});
+
+// @desc    Search users by name or email
+// @route   GET /api/users/search
+// @access  Private/Admin
+const searchUsers = asyncHandler(async (req, res) => {
+	const { query = "", limit = 10 } = req.query;
+
+	if (!query.trim()) {
+		return res.status(200).json([]);
+	}
+
+	const searchRegex = new RegExp(query.trim(), "i");
+
+	const users = await User.find({
+		$or: [{ name: searchRegex }, { email: searchRegex }]
+	})
+		.select("_id name email")
+		.limit(parseInt(limit))
+		.sort({ name: 1 });
+
+	res.status(200).json(users);
+});
+
+// @desc    Get users by IDs
+// @route   POST /api/users/by-ids
+// @access  Private/Admin
+const getUsersByIds = asyncHandler(async (req, res) => {
+	const { userIds } = req.body;
+
+	if (!userIds || !Array.isArray(userIds)) {
+		res.status(400);
+		throw new Error("User IDs array is required");
+	}
+
+	const users = await User.find({
+		_id: { $in: userIds }
+	})
+		.select("_id name email")
+		.sort({ name: 1 });
+
+	res.status(200).json(users);
 });
 
 export {
@@ -214,5 +266,7 @@ export {
 	getUsers,
 	getUserById,
 	deleteUser,
-	updateUser
+	updateUser,
+	searchUsers,
+	getUsersByIds
 };

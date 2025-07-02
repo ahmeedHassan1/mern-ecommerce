@@ -108,7 +108,7 @@ const createProductReview = asyncHandler(async (req, res) => {
 		throw new Error("Product not found");
 	}
 
-	if(!rating || !comment) {
+	if (!rating || !comment) {
 		res.status(400);
 		throw new Error("Please provide rating and comment");
 	}

@@ -11,7 +11,10 @@ import {
 	getTopProducts
 } from "../controllers/product.js";
 import { protect, admin } from "../middleware/auth.js";
-import { validateProduct, validateReview } from "../middleware/validation.js";
+import {
+	validateProductUpdate,
+	validateReview
+} from "../middleware/validation.js";
 import { strictLimiter } from "../middleware/rateLimiting.js";
 
 /**
@@ -103,10 +106,7 @@ import { strictLimiter } from "../middleware/rateLimiting.js";
  *       403:
  *         description: Admin access required
  */
-router
-	.route("/")
-	.get(getProducts)
-	.post(protect, admin, validateProduct, createProduct);
+router.route("/").get(getProducts).post(protect, admin, createProduct);
 
 /**
  * @swagger
@@ -216,7 +216,7 @@ router.get("/top", getTopProducts);
 router
 	.route("/:id")
 	.get(getProductById)
-	.put(protect, admin, validateProduct, updateProduct)
+	.put(protect, admin, validateProductUpdate, updateProduct)
 	.delete(protect, admin, strictLimiter, deleteProduct);
 
 /**

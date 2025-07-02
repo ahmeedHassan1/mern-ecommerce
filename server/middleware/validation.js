@@ -4,8 +4,8 @@ import { body, validationResult } from "express-validator";
 export const checkValidation = (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		res.status(400);
 		const errorMessages = errors.array().map((error) => error.msg);
+		res.status(400);
 		throw new Error(errorMessages.join(", "));
 	}
 	next();
@@ -52,7 +52,7 @@ export const validateUpdateProfile = [
 		.normalizeEmail()
 		.withMessage("Please provide a valid email"),
 	body("password")
-		.optional()
+		.optional({ values: "falsy" })
 		.isLength({ min: 6 })
 		.withMessage("Password must be at least 6 characters long")
 		.matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
@@ -62,30 +62,128 @@ export const validateUpdateProfile = [
 	checkValidation
 ];
 
+export const validateAdminUserUpdate = [
+	body("name")
+		.optional()
+		.trim()
+		.isLength({ min: 2, max: 50 })
+		.withMessage("Name must be between 2 and 50 characters"),
+	body("email")
+		.optional()
+		.isEmail()
+		.normalizeEmail()
+		.withMessage("Please provide a valid email"),
+	body("password")
+		.optional({ values: "falsy" })
+		.isLength({ min: 6 })
+		.withMessage("Password must be at least 6 characters long")
+		.matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+		.withMessage(
+			"Password must contain at least one uppercase letter, one lowercase letter, and one number"
+		),
+	body("isAdmin")
+		.optional()
+		.isBoolean()
+		.withMessage("isAdmin must be a boolean value"),
+	checkValidation
+];
+
 // Product validation rules
 export const validateProduct = [
 	body("name")
 		.trim()
 		.isLength({ min: 1, max: 100 })
-		.withMessage(
-			"Product name is required and must be less than 100 characters"
-		),
+		.withMessage("Product name must be between 1 and 100 characters"),
 	body("price")
+		.optional()
+		.isNumeric()
 		.isFloat({ min: 0 })
 		.withMessage("Price must be a positive number"),
 	body("description")
+		.optional()
+		.trim()
+		.isLength({ min: 1, max: 1000 })
+		.withMessage("Description must be between 1 and 1000 characters"),
+	body("brand")
+		.optional()
+		.trim()
+		.isLength({ min: 1, max: 50 })
+		.withMessage("Brand must be between 1 and 50 characters"),
+	body("category")
+		.optional()
+		.trim()
+		.isLength({ min: 1, max: 50 })
+		.withMessage("Category must be between 1 and 50 characters"),
+	body("countInStock")
+		.optional()
+		.isInt({ min: 0 })
+		.withMessage("Count in stock must be a non-negative integer"),
+	checkValidation
+];
+
+// Product creation validation rules (stricter)
+export const validateProductCreate = [
+	body("name")
+		.trim()
+		.isLength({ min: 1, max: 100 })
+		.withMessage(
+			"Product name is required and must be between 1 and 100 characters"
+		),
+	body("price")
+		.isNumeric()
+		.isFloat({ min: 0 })
+		.withMessage("Price is required and must be a positive number"),
+	body("description")
 		.trim()
 		.isLength({ min: 10, max: 1000 })
-		.withMessage("Description must be between 10 and 1000 characters"),
+		.withMessage(
+			"Description is required and must be between 10 and 1000 characters"
+		),
 	body("brand")
 		.trim()
 		.isLength({ min: 1, max: 50 })
-		.withMessage("Brand is required and must be less than 50 characters"),
+		.withMessage("Brand is required and must be between 1 and 50 characters"),
 	body("category")
 		.trim()
 		.isLength({ min: 1, max: 50 })
-		.withMessage("Category is required and must be less than 50 characters"),
+		.withMessage(
+			"Category is required and must be between 1 and 50 characters"
+		),
 	body("countInStock")
+		.isInt({ min: 0 })
+		.withMessage("Count in stock must be a non-negative integer"),
+	checkValidation
+];
+
+// Product update validation rules (more flexible)
+export const validateProductUpdate = [
+	body("name")
+		.optional()
+		.trim()
+		.isLength({ min: 1, max: 100 })
+		.withMessage("Product name must be between 1 and 100 characters"),
+	body("price")
+		.optional()
+		.isNumeric()
+		.isFloat({ min: 0 })
+		.withMessage("Price must be a positive number"),
+	body("description")
+		.optional()
+		.trim()
+		.isLength({ min: 1, max: 1000 })
+		.withMessage("Description must be between 1 and 1000 characters"),
+	body("brand")
+		.optional()
+		.trim()
+		.isLength({ min: 1, max: 50 })
+		.withMessage("Brand must be between 1 and 50 characters"),
+	body("category")
+		.optional()
+		.trim()
+		.isLength({ min: 1, max: 50 })
+		.withMessage("Category must be between 1 and 50 characters"),
+	body("countInStock")
+		.optional()
 		.isInt({ min: 0 })
 		.withMessage("Count in stock must be a non-negative integer"),
 	checkValidation

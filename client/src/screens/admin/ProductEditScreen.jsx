@@ -61,7 +61,7 @@ const ProductEditScreen = () => {
 				countInStock,
 				description
 			};
-			await updateProduct(updatedProduct);
+			await updateProduct(updatedProduct).unwrap();
 			toast.success("Product updated");
 			navigate("/admin/productlist");
 		} catch (error) {

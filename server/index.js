@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import cors from "cors";
 import morgan from "morgan";
+import fs from "fs";
 
 import connectDB from "./config/db.js";
 import { specs, swaggerUi } from "./config/swagger.js";
@@ -105,6 +106,10 @@ app.get("/api", (req, res) => {
 			promos: "/api/promos",
 			auth: "/api/auth",
 			config: "/api/config/paypal"
+		},
+		features: {
+			userSearch: "/api/users/search",
+			usersByIds: "/api/users/by-ids"
 		}
 	});
 });
@@ -114,6 +119,25 @@ app.get("/api/config/paypal", (req, res) =>
 );
 
 const __dirname = path.resolve();
+
+// Custom middleware to handle missing upload files gracefully
+app.use("/uploads", (req, res, next) => {
+	const filePath = path.join(__dirname, "/uploads", req.path);
+
+	// Check if file exists before serving
+	if (req.method === "GET" && !fs.existsSync(filePath)) {
+		logger.warn(`Missing upload file requested: ${req.path}`);
+		return res.status(404).json({
+			message: "File not found",
+			path: req.path,
+			suggestion:
+				"The file may have been deleted or moved. Please re-upload the image."
+		});
+	}
+
+	next();
+});
+
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
 if (process.env.NODE_ENV === "production") {
