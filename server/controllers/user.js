@@ -1,6 +1,6 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/user.js";
-import generateToken from "../utils/generateToken.js";
+import { generateTokens } from "../utils/generateToken.js";
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -15,7 +15,11 @@ const authUser = asyncHandler(async (req, res) => {
 		throw new Error("Invalid email or password");
 	}
 
-	generateToken(res, user._id);
+	// Generate both access and refresh tokens
+	const { refreshToken } = generateTokens(res, user._id);
+
+	// Store refresh token in database
+	await user.addRefreshToken(refreshToken);
 
 	res.status(200).json({
 		_id: user._id,
@@ -49,7 +53,11 @@ const registerUser = asyncHandler(async (req, res) => {
 		throw new Error("Invalid user data");
 	}
 
-	generateToken(res, user._id);
+	// Generate both access and refresh tokens
+	const { refreshToken } = generateTokens(res, user._id);
+
+	// Store refresh token in database
+	await user.addRefreshToken(refreshToken);
 
 	res.status(201).json({
 		_id: user._id,
@@ -63,7 +71,20 @@ const registerUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users/logout
 // @access  Private
 const logoutUser = asyncHandler(async (req, res) => {
+	const { refreshToken } = req.cookies;
+
+	if (refreshToken && req.user) {
+		// Remove this specific refresh token from database
+		await req.user.removeRefreshToken(refreshToken);
+	}
+
+	// Clear both cookies
 	res.cookie("jwt", "", {
+		httpOnly: true,
+		expires: new Date(0)
+	});
+
+	res.cookie("refreshToken", "", {
 		httpOnly: true,
 		expires: new Date(0)
 	});

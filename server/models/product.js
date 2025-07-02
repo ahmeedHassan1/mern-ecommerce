@@ -79,6 +79,21 @@ const productSchema = new mongoose.Schema(
 	}
 );
 
+// Indexes for performance optimization
+productSchema.index({ name: "text" }); // Text search for product names
+productSchema.index({ rating: -1 }); // For top-rated products (descending)
+productSchema.index({ category: 1 }); // For category filtering
+productSchema.index({ brand: 1 }); // For brand filtering
+productSchema.index({ price: 1 }); // For price sorting
+productSchema.index({ countInStock: 1 }); // For stock availability
+productSchema.index({ user: 1 }); // For admin queries by creator
+productSchema.index({ createdAt: -1 }); // For newest products
+
+// Compound indexes for complex queries
+productSchema.index({ category: 1, rating: -1 }); // Category + rating
+productSchema.index({ brand: 1, price: 1 }); // Brand + price
+productSchema.index({ countInStock: 1, rating: -1 }); // Available + popular
+
 const Product = mongoose.model("Product", productSchema);
 
 export default Product;

@@ -40,36 +40,35 @@ const promoCodeSchema = new mongoose.Schema(
 	}
 );
 
-promoCodeSchema.methods.checkCode = async function (code, userId) {
+promoCodeSchema.methods.checkCode = async function (userId) {
 	const error = new Error();
-	const promoCode = await PromoCode.findOne({ code });
 
-	if (!promoCode) {
-		error.message = "Invalid promo code";
-		error.status = 404;
-		throw error;
-	}
-
-	if (promoCode.maxUses <= promoCode.uses) {
+	if (this.maxUses <= this.uses) {
 		error.message = "Promo code has been used up";
 		error.status = 400;
 		throw error;
 	}
 
-	if (promoCode.expiresAt < new Date()) {
+	if (this.expiresAt < new Date()) {
 		error.message = "Promo code has expired";
 		error.status = 400;
 		throw error;
 	}
 
-	if (promoCode.users.length > 0 && !promoCode.users.includes(userId)) {
+	if (this.users.length > 0 && !this.users.includes(userId)) {
 		error.message = "You are not eligible to use this promo code";
 		error.status = 400;
 		throw error;
 	}
 
-	return promoCode;
+	return this;
 };
+
+// Indexes for performance optimization
+promoCodeSchema.index({ code: 1 }, { unique: true }); // Fast code lookups
+promoCodeSchema.index({ expiresAt: 1 }); // For expiry checks
+promoCodeSchema.index({ uses: 1, maxUses: 1 }); // For usage validation
+promoCodeSchema.index({ users: 1 }); // For user eligibility
 
 const PromoCode = mongoose.model("PromoCode", promoCodeSchema);
 

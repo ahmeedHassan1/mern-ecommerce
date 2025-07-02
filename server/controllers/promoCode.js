@@ -54,7 +54,7 @@ const checkPromoCode = asyncHandler(async (req, res) => {
 	}
 
 	try {
-		await promoCode.checkCode(code, req.user._id);
+		await promoCode.checkCode(req.user._id);
 		res
 			.status(200)
 			.json({ message: "Promo code is valid", discount: promoCode.discount });
@@ -77,7 +77,7 @@ const usePromoCode = asyncHandler(async (req, res) => {
 	}
 
 	try {
-		await promoCode.checkCode(code, req.user._id);
+		await promoCode.checkCode(req.user._id);
 		promoCode.uses += 1;
 		await promoCode.save();
 		res.status(200).json({ message: "Promo code used" });
@@ -85,7 +85,6 @@ const usePromoCode = asyncHandler(async (req, res) => {
 		res.status(error.status || 500);
 		throw new Error(error.message);
 	}
-
 });
 
 // @desc    Update a promo code

@@ -76,6 +76,19 @@ const orderSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
+// Indexes for performance optimization
+orderSchema.index({ user: 1 }); // For user's orders queries
+orderSchema.index({ isPaid: 1 }); // For payment status filtering
+orderSchema.index({ isDelivered: 1 }); // For delivery status filtering
+orderSchema.index({ paymentMethod: 1 }); // For payment method filtering
+orderSchema.index({ createdAt: -1 }); // For recent orders
+orderSchema.index({ totalPrice: -1 }); // For high-value orders
+
+// Compound indexes for complex queries
+orderSchema.index({ user: 1, createdAt: -1 }); // User's recent orders
+orderSchema.index({ isPaid: 1, isDelivered: 1 }); // Order status combinations
+orderSchema.index({ user: 1, isPaid: 1 }); // User's paid orders
+
 const Order = mongoose.model("Order", orderSchema);
 
 export default Order;
