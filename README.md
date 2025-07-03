@@ -13,6 +13,10 @@ This is a complete e-commerce platform designed for modern online retail, featur
 - 📱 **Responsive Design** - Mobile-first approach with React Bootstrap
 - 🛡️ **Production Ready** - Security hardened with structured logging and error handling
 - 📊 **Monitoring & Analytics** - Winston logging, request tracking, performance metrics
+- 🔧 **Enhanced Validation** - Advanced password security and partial update support
+- 📁 **Robust File Management** - Comprehensive upload handling with error recovery
+- 🔍 **Advanced User Search** - Real-time user search for admin operations
+- 🎫 **Smart Promo Management** - User-specific promo code assignment with searchable interface
 
 ## 📚 **Documentation**
 
@@ -53,21 +57,27 @@ npm run verify:indexes     # Verify database indexes
 - 💰 **PayPal & credit card integration** with secure processing
 
 ### **Admin Management**
-- 📦 **Product management** - CRUD operations with image upload
-- 👥 **User management** - Account control and role assignment
-- 🏷️ **Promo code management** - Create, edit, track usage
+- 📦 **Product management** - CRUD operations with enhanced image upload
+- 👥 **User management** - Account control with advanced search functionality
+- 🏷️ **Smart Promo Management** - User-specific targeting with searchable interface
 - 📋 **Order management** - Status updates and delivery tracking
+- 📁 **File Management** - Upload monitoring, verification, and cleanup tools
+- 🔍 **Real-time Search** - Dynamic user lookup for promo assignment
+- ✅ **Partial Updates** - Modify only the fields you want to change
 
 ### **Security Features** 🔒
 - 🔐 **JWT Refresh Tokens** - Short-lived access tokens (15min) with secure refresh tokens (7 days)
 - 🛡️ **Rate Limiting** - Global (200 req/15min) and route-specific limits with Redis-ready architecture
-- ✅ **Input Validation** - Comprehensive request validation using express-validator
-- � **Security Headers** - Helmet.js protection against common vulnerabilities
-- � **Structured Logging** - Winston-based error, access, and security event logging
+- ✅ **Advanced Input Validation** - Enhanced password requirements and smart partial updates
+- 🔒 **Password Security** - Minimum 6 chars with uppercase, lowercase, and numbers
+- 🎯 **Smart Field Updates** - Only validates and updates provided fields
+- 🛡️ **Security Headers** - Helmet.js protection against common vulnerabilities
+- 📊 **Structured Logging** - Winston-based error, access, and security event logging
 - 🌐 **CORS Configuration** - Secure cross-origin request handling with credential support
 - 🍪 **Secure Cookies** - HttpOnly, Secure, SameSite cookies for token management
 - 🔑 **Session Management** - Multi-device logout, token blacklisting, secure refresh flow
 - 🛡️ **Error Handling** - Secure error responses without information leakage
+- 📁 **File Security** - Comprehensive upload validation and error handling
 
 ### **Performance Optimizations** ⚡
 - 📈 **Strategic Database Indexing** - Compound and text indexes for optimal query performance
@@ -86,358 +96,170 @@ npm run verify:indexes     # Verify database indexes
 - 🔍 **Security Event Logging** - Login attempts, rate limiting, validation failures
 - 📁 **Log Management** - Organized log files with rotation and archiving ready
 
-## 🛠️ **Technologies & Dependencies**
-
-### **Frontend Stack**
-- **React 18** - Modern React with hooks and concurrent features
-- **Redux Toolkit** - State management with RTK Query
-- **React Bootstrap** - Responsive UI components
-- **React Router** - Client-side routing
-- **Vite** - Fast build tool and development server
-
-### **Backend Stack**
-- **Node.js** - JavaScript runtime environment
-- **Express.js** - Web application framework
-- **MongoDB** - NoSQL database with Mongoose ODM
-- **JWT** - JSON Web Token authentication
-- **bcrypt.js** - Password hashing
-
-### **Security & Validation**
-- **Helmet** - Security headers middleware
-- **express-rate-limit** - Rate limiting middleware
-- **express-validator** - Request validation
-- **cors** - Cross-origin resource sharing
-- **cookie-parser** - Cookie handling
-
-### **Development & Testing**
-- **Winston** - Structured logging with multiple transports
-- **Morgan** - HTTP request logging middleware
-- **Swagger/OpenAPI** - Interactive API documentation
-- **express-validator** - Request validation middleware
-- **Nodemon** - Development auto-restart
-- **Concurrently** - Run multiple commands
-- **Custom Test Suite** - Automated security and performance testing
-
-## 📊 **API Endpoints Overview**
-
-### **Authentication & Users** (`/api/users`, `/api/auth`)
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/users` | Register new user | Public |
-| POST | `/users/auth` | Login user | Public |
-| POST | `/users/logout` | Logout user | Private |
-| GET | `/users/profile` | Get user profile | Private |
-| PUT | `/users/profile` | Update profile | Private |
-| GET | `/users` | Get all users | Admin |
-| POST | `/auth/refresh` | Refresh access token | Refresh Token |
-| POST | `/auth/logout-all` | Logout all devices | Private |
-
-### **Products** (`/api/products`)
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/products` | Get products (paginated) | Public |
-| GET | `/products/top` | Get top rated products | Public |
-| GET | `/products/:id` | Get product by ID | Public |
-| POST | `/products` | Create product | Admin |
-| PUT | `/products/:id` | Update product | Admin |
-| DELETE | `/products/:id` | Delete product | Admin |
-| POST | `/products/:id/reviews` | Add review | Private |
-
-### **Orders** (`/api/orders`)
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/orders` | Create new order | Private |
-| GET | `/orders/mine` | Get user orders | Private |
-| GET | `/orders/:id` | Get order by ID | Private |
-| PUT | `/orders/:id/pay` | Update to paid | Private |
-| PUT | `/orders/:id/deliver` | Mark as delivered | Admin |
-| GET | `/orders` | Get all orders | Admin |
-
-### **Promo Codes** (`/api/promos`)
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/promos/check` | Validate promo code | Private |
-| POST | `/promos/use` | Apply promo code | Private |
-| GET | `/promos` | Get all promo codes | Admin |
-| POST | `/promos` | Create promo code | Admin |
-| PUT | `/promos/:id` | Update promo code | Admin |
-| DELETE | `/promos/:id` | Delete promo code | Admin |
-
-## 🚀 **Quick Start**
-
-- Create a MongoDB database and obtain your `MongoDB URI` - [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register)
-- Create a PayPal account and obtain your `Client ID` - [PayPal Developer](https://developer.paypal.com/)
-
-### Environment Variables
-
-Create a `.env` file in the root directory and add the following variables:
-
-```env
-NODE_ENV=development
-PORT=5000
-MONGO_URI=your_mongodb_uri
-JWT_SECRET=your_strong_jwt_secret_minimum_32_characters
-JWT_REFRESH_SECRET=your_strong_refresh_secret_minimum_32_characters
-PAYPAL_CLIENT_ID=your_paypal_client_id
-PAGINATION_LIMIT=8
-```
-
-> **Security Note**: Use strong, randomly generated secrets for JWT tokens. Consider using different secrets for different environments.
-
-## Installation & Setup
-
-1. **Clone the repository:**
-    ```bash
-    git clone https://github.com/yourusername/mern-ecommerce.git
-    cd mern-ecommerce
-    ```
-
-2. **Install server dependencies:**
-    ```bash
-    npm install
-    ```
-
-3. **Install client dependencies:**
-    ```bash
-    cd client
-    npm install
-    cd ..
-    ```
-
-4. **Set up environment variables:**
-    ```bash
-    cp example.env .env
-    # Edit .env with your actual values
-    ```
-
-5. **Initialize the database:**
-    ```bash
-    npm run data:import
-    ```
-
-6. **Verify database indexes (optional):**
-    ```bash
-    npm run verify:indexes
-    ```
-
-## Development
-
-### **Start Development Server**
-
-1. **Run both client and server concurrently:**
-    ```bash
-    npm run dev
-    ```
-
-2. **Or run them separately:**
-    ```bash
-    # Terminal 1 - Backend (localhost:5000)
-    npm run server
-    
-    # Terminal 2 - Frontend (localhost:8080)
-    npm run client
-    ```
-
-3. **Access the application:**
-    - Frontend: `http://localhost:8080`
-    - Backend API: `http://localhost:5000`
-    - API Documentation: `http://localhost:5000/api-docs`
-
-### **Available Scripts**
-
-```bash
-# Development
-npm run dev              # Run client and server concurrently
-npm run server           # Start backend server with nodemon
-npm run client           # Start frontend development server
-
-# Testing
-npm run test:security    # Test security features and validation
-npm run test:interactive # Interactive testing tool
-npm run test:refresh     # Test JWT refresh token system
-npm run test:pooling     # Test MongoDB connection pooling
-npm run verify:indexes   # Verify and benchmark database indexes
-
-# Database
-npm run data:import      # Seed database with sample data
-npm run data:destroy     # Clear all data from database
-
-# Production
-npm run build            # Build client for production
-npm start               # Start production server
-```
-
-## Testing
-
-This project includes comprehensive testing infrastructure to ensure all features work correctly.
-
-### **Automated Testing**
-
-1. **Security and Validation Testing:**
-    ```bash
-    npm run test:security
-    ```
-    Tests rate limiting, input validation, authentication, and security headers.
-
-2. **JWT Refresh Token Testing:**
-    ```bash
-    npm run test:refresh
-    ```
-    Tests token generation, refresh, expiration, and session management.
-
-3. **Database Index Verification:**
-    ```bash
-    npm run verify:indexes
-    ```
-    Verifies all indexes exist and benchmarks query performance.
-
-4. **Connection Pooling Testing:**
-    ```bash
-    npm run test:pooling
-    ```
-    Tests MongoDB connection pool configuration and concurrent operations.
-
-### **Interactive Testing**
-
-```bash
-npm run test:interactive
-```
-Provides an interactive CLI tool for manual testing of all endpoints with real-time feedback.
-
-### **API Documentation Testing**
-
-1. **Swagger UI:** Visit `http://localhost:5000/api-docs` (when server is running)
-2. **Postman Collection:** Import `docs/MERN-Ecommerce-API.postman_collection.json`
-
-### **Test Users**
-
-Default test accounts (after running `npm run data:import`):
-
-```
-Admin Account:
-Email: admin@email.com
-Password: 123456
-
-Customer Accounts:
-Email: john@email.com
-Password: 123456
-
-Email: jane@email.com
-Password: 123456
-```
-
-## Production Deployment
-
-### **Build for Production**
-
-1. **Create optimized client build:**
-    ```bash
-    npm run build
-    ```
-    This creates a `client/dist` folder with production-ready static files.
-
-2. **Start production server:**
-    ```bash
-    npm start
-    ```
-
-### **Environment Configuration**
-
-For production deployment, ensure you:
-
-1. **Set production environment variables:**
-    ```env
-    NODE_ENV=production
-    MONGO_URI=your_production_mongodb_uri
-    JWT_SECRET=strong_production_secret_32_chars_minimum
-    JWT_REFRESH_SECRET=different_strong_secret_32_chars_minimum
-    ```
-
-2. **Configure CORS for your domain:**
-    ```javascript
-    // In server/index.js, update CORS configuration
-    app.use(cors({
-      origin: 'https://yourdomain.com',
-      credentials: true
-    }));
-    ```
-
-3. **Set up SSL/HTTPS** for secure cookie transmission
-
-## Security Considerations
-
-This project implements multiple security layers:
-
-- **🔐 Authentication:** JWT tokens with refresh mechanism
-- **🛡️ Authorization:** Role-based access control (User/Admin)
-- **🔒 Input Validation:** All inputs validated and sanitized
-- **🚫 Rate Limiting:** Prevents abuse and DDoS attacks
-- **🍪 Secure Cookies:** HttpOnly, Secure, SameSite cookies
-- **📊 Logging:** Security events and errors logged
-- **🔧 Headers:** Security headers via Helmet.js
-
-For production deployment, also consider:
-- SSL/TLS certificates
-- Environment variable security
-- Database connection security
-- Regular security updates
-
-### Seed Database
-
-You can use the following commands to seed the database with sample users, products, and promo codes:
-
-```bash
-# Import sample data
-npm run data:import
-
-# Clear all data
-npm run data:destroy
-```
-
-The sample data includes:
-- **Users:** Admin and customer accounts with different roles
-- **Products:** Electronics with images, descriptions, and reviews
-- **Promo Codes:** Various discount codes for testing
-
-### Sample User Accounts
-
-After importing data, you can log in with these accounts:
-
-```
-🔑 Admin Account (Full Access):
-Email: admin@email.com
-Password: 123456
-
-👤 Customer Accounts:
-Email: john@email.com
-Password: 123456
-
-Email: jane@email.com  
-Password: 123456
-```
-
-## Project Structure
-
-```
-mern-ecommerce/
-├── client/                 # React frontend
-│   ├── src/
-│   │   ├── components/     # Reusable UI components
-│   │   ├── screens/        # Page components
-│   │   ├── slices/         # Redux state management
-│   │   └── utils/          # Helper functions
-│   └── public/             # Static assets
-├── server/                 # Express backend
-│   ├── controllers/        # Route handlers
-│   ├── middleware/         # Custom middleware
-│   ├── models/             # MongoDB schemas
-│   ├── routes/             # API routes
-│   ├── utils/              # Helper functions
-│   └── config/             # Configuration files
-├── scripts/                # Testing and utility scripts
-├── docs/                   # Documentation files
-└── logs/                   # Application logs (generated)
-```
+## 🔌 **API Endpoints**
+
+### **Authentication & User Management**
+
+| Method | Endpoint | Description | Auth Required | Admin Only |
+|--------|----------|-------------|---------------|------------|
+| `POST` | `/api/users` | Register a new user | ❌ | ❌ |
+| `POST` | `/api/users/auth` | Login user | ❌ | ❌ |
+| `POST` | `/api/users/logout` | Logout user | ❌ | ❌ |
+| `GET` | `/api/users/profile` | Get user profile | ✅ | ❌ |
+| `PUT` | `/api/users/profile` | Update user profile | ✅ | ❌ |
+| `GET` | `/api/users` | Get all users | ✅ | ✅ |
+| `GET` | `/api/users/search` | Search users by name/email | ✅ | ✅ |
+| `POST` | `/api/users/by-ids` | Get users by array of IDs | ✅ | ✅ |
+| `GET` | `/api/users/:id` | Get user by ID | ✅ | ✅ |
+| `PUT` | `/api/users/:id` | Update user by ID | ✅ | ✅ |
+| `DELETE` | `/api/users/:id` | Delete user by ID | ✅ | ✅ |
+
+### **JWT Token Management**
+
+| Method | Endpoint | Description | Auth Required | Admin Only |
+|--------|----------|-------------|---------------|------------|
+| `POST` | `/api/auth/refresh` | Refresh access token | ❌ | ❌ |
+| `POST` | `/api/auth/logout` | Logout from current device | ✅ | ❌ |
+| `POST` | `/api/auth/logout-all` | Logout from all devices | ✅ | ❌ |
+| `GET` | `/api/auth/token-info` | Get current token info | ✅ | ❌ |
+
+### **Products & Reviews**
+
+| Method | Endpoint | Description | Auth Required | Admin Only |
+|--------|----------|-------------|---------------|------------|
+| `GET` | `/api/products` | Get all products (with pagination & search) | ❌ | ❌ |
+| `GET` | `/api/products/top` | Get top rated products | ❌ | ❌ |
+| `GET` | `/api/products/:id` | Get product by ID | ❌ | ❌ |
+| `POST` | `/api/products` | Create new product | ✅ | ✅ |
+| `PUT` | `/api/products/:id` | Update product by ID | ✅ | ✅ |
+| `DELETE` | `/api/products/:id` | Delete product by ID | ✅ | ✅ |
+| `POST` | `/api/products/:id/reviews` | Create product review | ✅ | ❌ |
+
+### **Orders & Payment**
+
+| Method | Endpoint | Description | Auth Required | Admin Only |
+|--------|----------|-------------|---------------|------------|
+| `POST` | `/api/orders` | Create new order | ✅ | ❌ |
+| `GET` | `/api/orders` | Get all orders | ✅ | ✅ |
+| `GET` | `/api/orders/mine` | Get current user's orders | ✅ | ❌ |
+| `GET` | `/api/orders/:id` | Get order by ID | ✅ | ❌ |
+| `PUT` | `/api/orders/:id/pay` | Update order to paid | ✅ | ❌ |
+| `PUT` | `/api/orders/:id/deliver` | Update order to delivered | ✅ | ✅ |
+
+### **Promo Codes**
+
+| Method | Endpoint | Description | Auth Required | Admin Only |
+|--------|----------|-------------|---------------|------------|
+| `GET` | `/api/promos` | Get all promo codes | ✅ | ✅ |
+| `POST` | `/api/promos` | Create new promo code | ✅ | ✅ |
+| `POST` | `/api/promos/check` | Check if promo code is valid | ✅ | ❌ |
+| `POST` | `/api/promos/use` | Use a promo code | ✅ | ❌ |
+| `GET` | `/api/promos/:id` | Get promo code by ID | ✅ | ✅ |
+| `PUT` | `/api/promos/:id` | Update promo code by ID | ✅ | ✅ |
+| `DELETE` | `/api/promos/:id` | Delete promo code by ID | ✅ | ✅ |
+
+### **File Upload Management**
+
+| Method | Endpoint | Description | Auth Required | Admin Only |
+|--------|----------|-------------|---------------|------------|
+| `POST` | `/api/upload` | Upload image file | ❌ | ❌ |
+| `GET` | `/api/upload/check/:filename` | Check if file exists | ❌ | ❌ |
+| `GET` | `/api/upload/list` | List all uploaded files | ❌ | ❌ |
+| `DELETE` | `/api/upload/:filename` | Delete uploaded file | ❌ | ❌ |
+
+### **API Features**
+
+#### **Authentication & Security**
+- **JWT Refresh Token System**: Short-lived access tokens (15min) with secure refresh tokens (7 days)
+- **Rate Limiting**: Global and endpoint-specific limits with strict controls on sensitive operations
+- **Password Requirements**: Minimum 6 characters with uppercase, lowercase, and numbers
+- **Partial Updates**: Only validates and updates fields that are actually provided
+
+#### **Search & Filtering**
+- **Product Search**: Text search on product name and description with pagination
+- **User Search**: Real-time search by name or email for admin operations
+- **Order Filtering**: Filter orders by payment status, delivery status, and date ranges
+
+#### **File Management**
+- **Secure Upload**: Image validation with file type and size restrictions
+- **File Verification**: Check file existence and metadata before operations
+- **Upload Monitoring**: List all uploaded files with detailed information
+- **Error Handling**: Comprehensive error responses for failed uploads
+
+#### **Validation & Error Handling**
+- **Input Validation**: Server-side validation using express-validator
+- **Smart Updates**: Optional field validation that only applies to provided fields
+- **Consistent Errors**: Structured JSON error responses across all endpoints
+- **Security Validation**: Input sanitization and XSS protection
+
+#### **Performance Features**
+- **Database Indexing**: Strategic indexes on frequently queried fields
+- **Pagination**: Efficient pagination for large datasets
+- **Connection Pooling**: Optimized MongoDB connection management
+- **Query Optimization**: Optimized database queries with proper field selection
+
+## ✨ **Recent Improvements & Features**
+
+### **🔐 Enhanced Security & Validation**
+- **Strong Password Requirements**: Minimum 6 characters with uppercase, lowercase, and numbers
+- **Smart Partial Updates**: Only validates and updates fields that are actually modified
+- **Improved Validation Logic**: Uses `optional({ values: "falsy" })` for proper optional field handling
+- **Secure File Upload**: Comprehensive error handling and file existence verification
+
+### **📁 Advanced File Management**
+- **Robust Upload System**: Enhanced error handling with detailed feedback
+- **File Verification**: Real-time file existence checking via `/api/upload/check/:filename`
+- **Upload Monitoring**: List and manage uploaded files via `/api/upload/list`
+- **Graceful Error Handling**: Missing files return JSON responses instead of server crashes
+- **File Cleanup**: Delete functionality via `/api/upload/:filename`
+
+### **👥 Enhanced User Management**
+- **Real-time User Search**: `/api/users/search` with name and email filtering
+- **Batch User Retrieval**: `/api/users/by-ids` for efficient multi-user fetching
+- **Searchable Admin Interface**: Dynamic user dropdown for promo code eligibility
+- **Partial Profile Updates**: Update any combination of user fields independently
+
+### **🎫 Smart Promo Code System**
+- **User-Specific Targeting**: Assign promo codes to specific users
+- **Searchable User Selection**: Real-time user search in admin promo interface
+- **Usage Tracking**: Comprehensive promo code analytics and limits
+- **Flexible Validation**: Improved expiry and usage validation logic
+
+## 📋 **Changelog & Recent Updates**
+
+### **Version 2.1.0 - Enhanced Security & User Management** (Current)
+
+#### 🆕 **New Features**
+- **Real-time User Search**: `/api/users/search` endpoint for dynamic user lookup
+- **Batch User Retrieval**: `/api/users/by-ids` for efficient multi-user operations  
+- **Enhanced File Management**: File verification, listing, and deletion endpoints
+- **Smart Promo Interface**: Searchable user dropdown for promo code assignment
+- **File Upload Monitoring**: Comprehensive upload status and error handling
+
+#### ✅ **Improvements**
+- **Enhanced Password Validation**: Strong password requirements with proper complexity rules
+- **Smart Partial Updates**: Only validate and update fields that are actually provided
+- **Improved Error Handling**: Better file upload error responses and recovery
+- **Validation Logic**: Fixed optional field validation using `optional({ values: "falsy" })`
+- **Admin UX**: Better user selection interface for promo code management
+
+#### 🔧 **Technical Enhancements** 
+- **Validation Middleware**: Improved handling of optional fields in updates
+- **File System**: Robust upload directory management and error handling
+- **Database Queries**: Optimized user search with text indexing
+- **Error Responses**: Consistent JSON error formatting across all endpoints
+- **Security**: Enhanced input validation and sanitization
+
+#### 🐛 **Bug Fixes**
+- Fixed partial update validation triggering on unchanged fields
+- Improved file upload error handling and missing file responses
+- Enhanced promo code validation logic for expiry and usage limits
+- Better error messaging for validation failures
+
+### **Migration Notes**
+- Update any frontend code to handle new password requirements
+- Test existing user update flows with new validation logic
+- Update any scripts using file upload to handle new error responses
 
 ## Contributing
 
@@ -458,6 +280,17 @@ We welcome contributions! Here's how to get started:
 - Update documentation as needed
 - Ensure all tests pass before submitting PR
 - Use meaningful commit messages
+- **Password Validation**: Ensure new endpoints follow enhanced validation patterns
+- **File Handling**: Implement proper error handling for file operations  
+- **Partial Updates**: Use smart field validation for optional updates
+- **Search Functionality**: Implement proper text indexing for searchable fields
+
+### **Code Quality Standards**
+- **Validation**: Use `optional({ values: "falsy" })` for optional field validation
+- **Error Handling**: Return consistent JSON error responses
+- **File Operations**: Always verify file existence before operations
+- **Security**: Implement proper input sanitization and rate limiting
+- **Documentation**: Update API docs for any new endpoints
 
 ## Acknowledgments
 
